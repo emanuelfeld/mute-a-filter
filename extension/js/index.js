@@ -24,7 +24,7 @@
       cursor: pointer;
     }`
 
-    document.head.appendChild(css)    
+    document.head.appendChild(css)
   }
 
   function setUpUserPage () {
@@ -91,7 +91,22 @@
 
       for (let i = filterIndex; i < commentAuthors.length; i++) {
         let userId = commentAuthors[i].href.split('/').pop()
-        let userName = commentAuthors[i].textContent
+        filterComment(userIdList, userId, comments[i])
+      }
+    })
+  }
+
+  function filterRecentActivity () {
+    window.browser.runtime.sendMessage({
+      'type': 'get'
+    }, function (res) {
+      const userIdList = res.data
+
+      const comments = Array.from(document.querySelectorAll('div.racomments'))
+      const commentAuthors = Array.from(document.querySelectorAll('a.rauname'))
+
+      for (let i = 0; i < commentAuthors.length; i++) {
+        let userId = commentAuthors[i].href.split('/').pop()
         filterComment(userIdList, userId, comments[i])
       }
     })
@@ -112,8 +127,6 @@
     window.browser.runtime.sendMessage({
       'type': 'add',
       'data': {'userName': userName, 'userId': userId}
-    }, function (res) {
-      filterThread()
     })
   }
 
@@ -121,8 +134,6 @@
     window.browser.runtime.sendMessage({
       'type': 'delete',
       'data': userId
-    }, function (res) {
-      filterThread()
     })
   }
 
@@ -146,6 +157,10 @@
       attributes: true,
       attributeFilter: ['style']
     })
+  } else if (href.match(/metafilter\.com\/contribute\/activity\//)) {
+    // On recent activity page
+    addCommentThreadStylesheet()
+    filterRecentActivity()
   } else if (href.match(/metafilter\.com\/user\//)) {
     // On user page
     addUserPageStylesheet()

@@ -21,15 +21,13 @@
     console.log('message', request)
     const type = request.type
     const data = request.data
-    if (type === 'add') {
-      addToDB(data)
-      sendResponse({ 'data': true })
-    } else if (type === 'get') {
+    if (type === 'get') {
       getAllItemsInStore(DB_PAGE_STORE_NAME, sendResponse)
       return true
+    } else if (type === 'add') {
+      addToDB(data)
     } else if (type === 'delete') {
       removeFromDB(data)
-      sendResponse({ 'data': true })
     }
   }
 
